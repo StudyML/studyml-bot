@@ -4,6 +4,10 @@ import json
 import urllib.request
 import urllib.parse
 from configparser import ConfigParser
+import os
+
+# change working directory to current path (pycharm issue)
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # read configuration
 config = ConfigParser()
