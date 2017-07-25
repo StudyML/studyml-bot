@@ -36,7 +36,10 @@ def hello():
 
     # read api key from external config (for security)
     print("https://api.telegram.org/bot" + config["main"]["apikey"] + "/sendMessage?chat_id=" + chatid + "&text=" + urllib.parse.quote(msgtext, encoding="utf-8"))
-    urllib.request.urlopen("https://api.telegram.org/bot" + config["main"]["apikey"] + "/sendMessage?chat_id=" + chatid + "&text=" + urllib.parse.quote(msgtext, encoding="utf-8"))
+
+    if (str.startswith(msgtext, "/말해")):
+        txt = str.split(msgtext, "/말해")[1].strip()
+        urllib.request.urlopen("https://api.telegram.org/bot" + config["main"]["apikey"] + "/sendMessage?chat_id=" + chatid + "&text=" + urllib.parse.quote(txt, encoding="utf-8"))
 
     #print(content)
     #print(content.message.text)
