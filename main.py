@@ -1,9 +1,10 @@
+from configparser import ConfigParser
 from flask import Flask
 from flask import request
+from package.BotCommander import BotCommander
 import json
 import urllib.request
 import urllib.parse
-from configparser import ConfigParser
 import os
 
 # change working directory to current path (pycharm issue)
@@ -14,6 +15,8 @@ config = ConfigParser()
 config.read('config.ini')
 
 app = Flask(__name__)
+
+bot = BotCommander()
 
 @app.route("/")
 def main():
@@ -37,11 +40,14 @@ def hello():
     # read api key from external config (for security)
     print("https://api.telegram.org/bot" + config["main"]["apikey"] + "/sendMessage?chat_id=" + chatid + "&text=" + urllib.parse.quote(msgtext, encoding="utf-8"))
 
-    if (str.startswith(msgtext, "/말해")):
+    rtnCommand = bot.processCommand(msgtext)
+
+    '''if (str.startswith(msgtext, "/말해")):
         txt = str.split(msgtext, "/말해")[1].strip()
-        urllib.request.urlopen("https://api.telegram.org/bot" + config["main"]["apikey"] + "/sendMessage?chat_id=" + chatid + "&text=" + urllib.parse.quote(txt, encoding="utf-8"))
+        urllib.request.urlopen("https://api.telegram.org/bot" + config["main"]["apikey"] + "/sendMessage?chat_id=" + chatid + "&text=" + urllib.parse.quote(txt, encoding="utf-8"))'''
 
-
+    if (rtnCommand is not None):
+        urllib.request.urlopen("https://api.telegram.org/bot" + config["main"]["apikey"] + "/sendMessage?chat_id=" + chatid + "&text=" + urllib.parse.quote(rtnCommand, encoding="utf-8"))
 
     #print(content)
     #print(content.message.text)
