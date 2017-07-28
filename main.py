@@ -3,7 +3,6 @@ from flask import Flask
 from flask import request
 from package.BotCommander import BotCommander
 import json
-import urllib.request
 import urllib.parse
 import os
 
@@ -16,7 +15,7 @@ config.read('config.ini')
 
 app = Flask(__name__)
 
-bot = BotCommander()
+bot = BotCommander(config["main"]["apikey"])
 
 @app.route("/")
 def main():
@@ -33,24 +32,17 @@ def hello():
     #print(result)
 
     chatid = str(result['message']['chat']['id'])
-    msgtext = result['message']['text']
+
+    if ('message' in result):
+        if ('text' in result['message']):
+            msgtext = result['message']['text']
 
     print(chatid + " " + msgtext)
 
     # read api key from external config (for security)
     print("https://api.telegram.org/bot" + config["main"]["apikey"] + "/sendMessage?chat_id=" + chatid + "&text=" + urllib.parse.quote(msgtext, encoding="utf-8"))
 
-    rtnCommand = bot.processCommand(msgtext)
-
-    '''if (str.startswith(msgtext, "/말해")):
-        txt = str.split(msgtext, "/말해")[1].strip()
-        urllib.request.urlopen("https://api.telegram.org/bot" + config["main"]["apikey"] + "/sendMessage?chat_id=" + chatid + "&text=" + urllib.parse.quote(txt, encoding="utf-8"))'''
-
-    if (rtnCommand is not None):
-        urllib.request.urlopen("https://api.telegram.org/bot" + config["main"]["apikey"] + "/sendMessage?chat_id=" + chatid + "&text=" + urllib.parse.quote(rtnCommand, encoding="utf-8"))
-
-    #print(content)
-    #print(content.message.text)
+    bot.processCommand(chatid, msgtext)
     return "Hello World!"
 
 if __name__ == "__main__":
